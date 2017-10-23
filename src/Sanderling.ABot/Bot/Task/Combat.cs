@@ -7,6 +7,7 @@ using System;
 using Sanderling.Interface.MemoryStruct;
 using Sanderling.ABot.Parse;
 using Bib3;
+using BotEngine.Interface;
 
 namespace Sanderling.ABot.Bot.Task
 {
@@ -70,7 +71,7 @@ namespace Sanderling.ABot.Bot.Task
 					?.Where(entry => entry?.ListBackgroundColor?.Any(IsFriendBackgroundColor) ?? false)
 					?.ToArray();
 
-					if (OwnAnomaly != true)
+					if (bot?.OwnAnomaly != true)
 					{
 						if (listOverviewEntryFriends.Length > 0)
 						{
@@ -79,7 +80,7 @@ namespace Sanderling.ABot.Bot.Task
 						}
 						else
 						{
-							Bot?.SetOwnAnomaly(true);
+							bot?.SetOwnAnomaly(true);
 						}
 					}
 				}
@@ -146,7 +147,7 @@ namespace Sanderling.ABot.Bot.Task
 						else
 						{
 							Completed = true;
-							Bot?.SetOwnAnomaly(false);
+							bot?.SetOwnAnomaly(false);
 						}
 					}
 			}

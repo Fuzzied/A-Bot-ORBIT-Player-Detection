@@ -6,6 +6,7 @@ using System.Linq;
 using Sanderling.Parse;
 using WindowsInput.Native;
 using System.Linq;
+using BotEngine.Common;
 
 
 namespace Sanderling.ABot.Bot.Task

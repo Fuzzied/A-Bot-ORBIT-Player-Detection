@@ -13,7 +13,7 @@ namespace Sanderling.ABot.Bot
 {
 	public class Bot
 	{
-		public bool Completed { private set; get; }
+		public bool OwnAnomaly { private set; get; }
 
 		static public readonly Func<Int64> GetTimeMilli = Bib3.Glob.StopwatchZaitMiliSictInt;
 
