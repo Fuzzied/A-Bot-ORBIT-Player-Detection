@@ -3,11 +3,7 @@ using Sanderling.Accumulation;
 using Sanderling.Motor;
 using System.Collections.Generic;
 using System.Linq;
-using Sanderling.Parse;
 using WindowsInput.Native;
-using System.Linq;
-using BotEngine.Common;
-
 
 namespace Sanderling.ABot.Bot.Task
 {
@@ -36,10 +32,31 @@ namespace Sanderling.ABot.Bot.Task
 			return new ModuleToggleTask { bot = bot, module = module };
 		}
 
+		public static IBotTask DeactiveModule(
+			this Bot bot,
+			IShipUiModule module)
+		{
+			if (module?.IsActive(bot) == false || module?.RampActive == false)
+			{
+				return null;
+			}
+			else
+			{
+				return new ModuleToggleTask { bot = bot, module = module };
+			}
+		}
+
+
+
 		static public IBotTask EnsureIsActive(
 			this Bot bot,
 			IEnumerable<IShipUiModule> setModule) =>
 			new BotTask { Component = setModule?.Select(module => bot?.EnsureIsActive(module)) };
+
+		public static IBotTask DeactivateModule(
+			this Bot bot,
+			IEnumerable<IShipUiModule> setModule) =>
+			new BotTask { Component = setModule?.Select(module => bot?.DeactiveModule(module)) };
 	}
 
 	public class ModuleToggleTask : IBotTask
@@ -62,55 +79,20 @@ namespace Sanderling.ABot.Bot.Task
 				yield return module?.MouseClick(MouseButtonIdEnum.Left);
 			}
 		}
-	}
 
-	public class SkipAnomalyF : IBotTask
-	{
-		public Sanderling.Parse.IMemoryMeasurement MemoryMeasurement;
-		public IEnumerable<IBotTask> Component => null;
-		public static bool ActuallyAnomaly(Interface.MemoryStruct.IListEntry scanResult) =>
-			scanResult?.CellValueFromColumnHeader("Distance")?.RegexMatchSuccessIgnoreCase("km") ?? false;
-		public static bool AnomalySuitableGeneral(Interface.MemoryStruct.IListEntry scanResult) =>
-			scanResult?.CellValueFromColumnHeader("Group")?.RegexMatchSuccessIgnoreCase("combat") ?? false;
-		public IEnumerable<MotionParam> Effects
+		public IBotTask ReloadAnomaly()
 		{
-			get
-			{
-				var altKey = VirtualKeyCode.MENU;
-				var pKey = VirtualKeyCode.VK_P;
+			var ReloadAnomalyFactory = new BotTask { Component = null, Effects = ReloadAnomalyFunction() };
+			return ReloadAnomalyFactory;
+		}
 
-				yield return altKey.KeyDown();
-				yield return pKey.KeyDown();
-				yield return altKey.KeyUp();
-				yield return pKey.KeyUp();
 
-				yield return altKey.KeyDown();
-				yield return pKey.KeyDown();
-				yield return altKey.KeyUp();
-				yield return pKey.KeyUp();
+		public IEnumerable<MotionParam> ReloadAnomalyFunction()
+		{
+			var APPS = VirtualKeyCode.APPS;
 
-				var probeScannerWindow = MemoryMeasurement?.WindowProbeScanner?.FirstOrDefault();
-				var scanActuallyAnomaly =
-					probeScannerWindow?.ScanResultView?.Entry?.FirstOrDefault(ActuallyAnomaly);
-
-				if (null != scanActuallyAnomaly)
-				{
-					var menuResult = MemoryMeasurement?.Menu?.ToList();
-					if (null == menuResult)
-					{
-						yield return scanActuallyAnomaly.MouseClick(MouseButtonIdEnum.Right);
-					}
-					else
-					{
-						menuResult = MemoryMeasurement?.Menu?.ToList();
-						var menuResultToUse = menuResult[0].Entry?.ToList();
-						if (menuResultToUse[2].Text == "Ignore Result")
-						{
-							yield return menuResultToUse[2].MouseClick(MouseButtonIdEnum.Left);
-						}
-					}
-				}
-			}
+			yield return APPS.KeyboardPress();
+			yield return APPS.KeyboardPress();
 		}
 	}
 }

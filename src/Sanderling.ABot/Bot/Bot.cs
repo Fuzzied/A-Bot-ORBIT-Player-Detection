@@ -14,6 +14,7 @@ namespace Sanderling.ABot.Bot
 	public class Bot
 	{
 		public bool OwnAnomaly { private set; get; }
+		public bool SkipAnomaly { private set; get; }
 
 		static public readonly Func<Int64> GetTimeMilli = Bib3.Glob.StopwatchZaitMiliSictInt;
 
@@ -55,9 +56,9 @@ namespace Sanderling.ABot.Bot
 			OwnAnomaly = value;
 		}
 
-		internal IBotTask SkipAnomaly(Sanderling.Parse.IMemoryMeasurement memory)
+		public void SetSkipAnomaly(bool value)
 		{
-			return new SkipAnomalyF { MemoryMeasurement = memory };
+			SkipAnomaly = value;
 		}
 
 		IEnumerable<IBotTask[]> StepOutputListTaskPath() =>

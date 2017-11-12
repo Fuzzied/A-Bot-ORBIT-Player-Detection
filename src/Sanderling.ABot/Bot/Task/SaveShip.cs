@@ -27,8 +27,8 @@ namespace Sanderling.ABot.Bot.Task
 			if (null == chatWindow)
 				return false;
 
-			if (chatWindow?.ParticipantView?.Scroll?.IsScrollable() ?? true)
-				return false;
+			//if (chatWindow?.ParticipantView?.Scroll?.IsScrollable() ?? true)
+			//	return false;
 
 			var listParticipantNeutralOrEnemy =
 				chatWindow?.ParticipantView?.Entry?.Where(participant => participant.IsNeutralOrEnemy())?.ToArray();
